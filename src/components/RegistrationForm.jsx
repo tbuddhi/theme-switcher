@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Box, Button, Divider, IconButton, InputAdornment, Stack, styled, TextField, Typography } from '@mui/material'
 import { useTheme } from '@mui/system'
 import { Visibility, VisibilityOff } from '@mui/icons-material'
-import Axios from 'axios';
+import axios from 'axios';
 
 const registerSchema = object({
   name: string()
@@ -17,13 +17,14 @@ const registerSchema = object({
     .min(8, 'Password must be more than 8 characters')
     .max(32, 'Password must be less than 32 characters')
 })
-  
+
 const RegistrationForm = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [user, setUser] = useState({});
   const theme = useTheme()
 
   const LoginInputField = styled(TextField)({
+    marginBottom: '1rem',
+    width: '100%',
     "& .MuiInputBase-root": {
       backgroundColor: theme.palette.background.inputBg
     }
@@ -45,35 +46,14 @@ const RegistrationForm = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSubmitSuccessful]);
 
-  const onSubmitHandler = async (values) => {
-    console.log(values);
+  const onSubmitHandler = (userInfo) => {
 
-    let mockApiUrl = "https://bde3d9f6-92ef-4d68-9618-82c49e55a679.mock.pstmn.io/createUser"
+    let mockApiUrl = "https://63b6557d58084a7af3af55c8.mockapi.io/api/users"
 
-    Axios.post(mockApiUrl, {
-      values,
-      headers: {
-        Authorization: ``,
-        'Content-Type': 'application/json'
-      }
-    }).then(res => {
-      console.log(res.data)
-    }).catch(err => console.log(err))
-    // try {
-    //   let res = await fetch( mockApiUrl, {
-    //     method: "POST",
-    //     body: JSON.stringify(values)
-    //   });
-    //   let resJson = await res.json();
-    //   if( res.statusCode === 200){
-    //     alert("User added successfully")
-
-    //   }
-
-    // } catch (error) {
-    //   console.log(error);
-    // }
-
+    axios.post(mockApiUrl, userInfo)
+      .then(res => {
+        console.log(res.data)
+      }).catch(err => console.log(err))
   };
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
@@ -86,7 +66,6 @@ const RegistrationForm = () => {
     <Box
       sx={theme.custom.registerForm}
     >
-
       <Typography
         variant="h5"
         sx={{ fontWeight: 600, pt: 2 }}
@@ -123,21 +102,17 @@ const RegistrationForm = () => {
         py={3}
       >
         <LoginInputField
-          sx={{ mb: 2 }}
-          variant='outlined'
           label='Full name'
           size='small'
-          fullWidth
           required
+          type='text'
           error={!!errors['name']}
           helperText={errors['name'] ? errors['name'].message : ''}
           {...register('name')}
         />
         <LoginInputField
-          sx={{ mb: 2 }}
           label='Email'
           size='small'
-          fullWidth
           required
           type='email'
           error={!!errors['email']}
@@ -145,10 +120,8 @@ const RegistrationForm = () => {
           {...register('email')}
         />
         <LoginInputField
-          sx={{ mb: 2 }}
           label='Password'
           size='small'
-          fullWidth
           required
           type={showPassword ? 'text' : 'password'}
           error={!!errors['password']}
@@ -175,7 +148,7 @@ const RegistrationForm = () => {
           fullWidth
           type='submit'
           color="orange"
-          sx={{ height: 40}}
+          sx={{ height: 40 }}
           elevation={1}
         >
           Register
